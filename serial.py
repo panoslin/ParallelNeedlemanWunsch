@@ -15,7 +15,7 @@ class Solution:
         for i in range(1, n + 1):
             for j in range(1, m + 1):
                 if word1[i - 1] == word2[j - 1]:
-                    # equal to case when both chars not preseted
+                    # equal to case when both chars not presented
                     dp[i][j] = dp[i - 1][j - 1]
                 else:
                     dp[i][j] = 1 + min(

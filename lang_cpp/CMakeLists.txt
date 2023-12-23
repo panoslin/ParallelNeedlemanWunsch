@@ -9,7 +9,7 @@ find_package(MPI REQUIRED)
 
 include_directories(${MPI_INCLUDE_PATH})
 
-add_executable(CPPTutorial mpi_hello_world.cpp testcases.cpp testcases.h serial.cpp)
+add_executable(CPPTutorial pipeline.cpp serial.cpp)
 
 # Link MPI libraries
 target_link_libraries(CPPTutorial PRIVATE MPI::MPI_CXX)

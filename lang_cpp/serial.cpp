@@ -59,7 +59,7 @@ public:
 int main() {
     Solution solution = Solution();
 
-    vector<tuple < string, string, int> > testcases = {
+    vector<tuple<string, string, int> > testcases = {
             {"horse",            "ros",              3},
             {"intention",        "execution",        5},
             {"a",                "a",                0},

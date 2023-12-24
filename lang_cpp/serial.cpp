@@ -24,13 +24,14 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <csignal>
 #include "testcases.h"
 
 class Solution {
 public:
-    int minDistance(std::string word1, std::string word2) {
-        int m = word1.length();//first word length
-        int n = word2.length();//second word length
+    static int minDistance(std::string word1, std::string word2) {
+        size_t m = word1.length();//first word length
+        size_t n = word2.length();//second word length
         // dp[i][j] := min # of operations to convert word1[0..i) to word2[0..j)
         std::vector<std::vector<int> > dp(m + 1, std::vector<int>(n + 1));
 
@@ -58,13 +59,16 @@ public:
 };
 
 int main() {
-    Solution solution = Solution();
-
+    // iterate through the testcases from testcases.h
     for (const auto &[word1, word2, expected]: testcases) {
         // current timestamp
         clock_t start = clock();
-        int result = solution.minDistance(word1, word2);
+        int result = Solution::minDistance(word1, word2);
         clock_t end = clock();
+        if (result != expected) {
+            std::cout << "Wrong Answer" << std::endl;
+            raise(SIGABRT);
+        }
         double elapsed_time = static_cast<double> (end - start) / CLOCKS_PER_SEC;
         std::cout << "time cost for "
                   << word1.length() * word2.length()

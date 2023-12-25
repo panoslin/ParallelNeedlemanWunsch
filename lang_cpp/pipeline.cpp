@@ -106,23 +106,24 @@ int main(int argc, char *argv[]) {
             int arr[] = {1, 1, 0};
             MPI_Isend(arr, 3, MPI_INT, ROOT_RANK, DEFAULT_TAG, MPI_COMM_WORLD, &request);
 
-
-            for (int col = 1; col < m; col++) {
+            n--;
+            m--;
+            for (int col = 1; col <= m; col++) {
                 int array[] = {1, col, col};
                 int dest = (((1 - col) % cpu_count) + cpu_count) % cpu_count;
                 MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
-                if (col != m - 1) {
+                if (col != m) {
                     int array2[] = {1, col + 1, col};
                     dest = ((-col % cpu_count) + cpu_count) % cpu_count;
                     MPI_Isend(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
                 }
             }
 
-            for (int row = 1; row < n; row++) {
+            for (int row = 1; row <= n; row++) {
                 int array[] = {row, 1, row};
                 int dest = (((row - 1) % cpu_count) + cpu_count) % cpu_count;
                 MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
-                if (row != n - 1) {
+                if (row != n) {
                     int array2[] = {row + 1, 1, row};
                     dest = row % cpu_count;
                     MPI_Isend(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
@@ -165,3 +166,6 @@ int main(int argc, char *argv[]) {
         // Finalize the MPI environment.
         MPI_Finalize();
     }
+
+    return 0;
+}

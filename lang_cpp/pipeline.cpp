@@ -94,6 +94,7 @@ int main(int argc, char *argv[]) {
         for (auto &[s1, s2, expected]: testcases) {
             clock_t start_time = clock();
             size_t n = s1.length() + 1, m = s2.length() + 1;
+
             // broadcast the string s1 to all processes
             MPI_Bcast(&n, 1, MPI_INT, ROOT_RANK, MPI_COMM_WORLD);
             MPI_Bcast(&m, 1, MPI_INT, ROOT_RANK, MPI_COMM_WORLD);
@@ -108,6 +109,7 @@ int main(int argc, char *argv[]) {
 
             n--;
             m--;
+
             for (int col = 1; col <= m; col++) {
                 int array[] = {1, col, col};
                 int dest = (((1 - col) % cpu_count) + cpu_count) % cpu_count;
@@ -131,7 +133,6 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-
             int answer = wait_recv_send(s1, s2, cpu_count);
             if (answer != expected) {
                 std::cout << "Wrong Answer" << std::endl;
@@ -140,7 +141,7 @@ int main(int argc, char *argv[]) {
             std::cout << "Finish with result " << answer << std::endl
                       << "time taken to process m=" << m << " n=" << n << std::endl
                       << "with " << cpu_count << " processors" << std::endl
-                      << (clock() - start_time) / CLOCKS_PER_SEC * 1000 << " ms" << std::endl
+                      << "is " << (clock() - start_time) / CLOCKS_PER_SEC * 1000 << " ms" << std::endl
                       << std::string(120, '*') << std::endl;
         }
 
@@ -150,22 +151,17 @@ int main(int argc, char *argv[]) {
             std::string s1, s2;
             size_t n = s1.length() + 1, m = s2.length() + 1;
             // recv the string s1 and s2 from process 0
-            MPI_Bcast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
-            MPI_Bcast(&m, 1, MPI_INT, 0, MPI_COMM_WORLD);
+            MPI_Bcast(&n, 1, MPI_INT, ROOT_RANK, MPI_COMM_WORLD);
+            MPI_Bcast(&m, 1, MPI_INT, ROOT_RANK, MPI_COMM_WORLD);
             s1.resize(n - 1);
             s2.resize(m - 1);
-            MPI_Bcast(&s1[0], n, MPI_CHAR, 0, MPI_COMM_WORLD);
-            MPI_Bcast(&s2[0], m, MPI_CHAR, 0, MPI_COMM_WORLD);
-
+            MPI_Bcast(&s1[0], n, MPI_CHAR, ROOT_RANK, MPI_COMM_WORLD);
+            MPI_Bcast(&s2[0], m, MPI_CHAR, ROOT_RANK, MPI_COMM_WORLD);
             wait_recv_send(s1, s2, cpu_count);
-
-
         }
-
-
-        // Finalize the MPI environment.
-        MPI_Finalize();
     }
 
+    // Finalize the MPI environment.
+    MPI_Finalize();
     return 0;
 }

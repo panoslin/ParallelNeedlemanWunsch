@@ -10,7 +10,7 @@ find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 
 #add_executable(lang_cpp pipeline.cpp testcases.cpp)
-add_executable(lang_cpp serial.cpp testcases.cpp pipeline.cpp testcases.h)
+add_executable(lang_cpp pipeline.cpp testcases.h helper.cpp helper.h)
 
 # Link MPI libraries
 target_link_libraries(lang_cpp PRIVATE MPI::MPI_CXX)

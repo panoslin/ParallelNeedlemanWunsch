@@ -42,7 +42,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
                 msg_sent++;
                 int array[3] = {target_row + 1, target_col, minValue};
                 int dest = (((target_row + 1 - target_col) % cpu_count) + cpu_count) % cpu_count;
-                MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                MPI_Send(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
             }
 
             // deletion
@@ -50,7 +50,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
                 msg_sent++;
                 int array[3] = {target_row, target_col + 1, minValue};
                 int dest = (((target_row - 1 - target_col) % cpu_count) + cpu_count) % cpu_count;
-                MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                MPI_Send(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
             }
 
             // replacement
@@ -58,7 +58,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
                 msg_sent++;
                 int array[3] = {target_row + 1, target_col + 1, minValue};
                 int dest = (((target_row - target_col) % cpu_count) + cpu_count) % cpu_count;
-                MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                MPI_Send(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
             }
 
             // release memory
@@ -68,7 +68,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
             if (msg_sent == 0) {
                 int array[3] = {-1, -1, minValue};
                 for (int i = 0; i < cpu_count; i++) {
-                    MPI_Isend(array, 3, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                    MPI_Send(array, 3, MPI_INT, i, DEFAULT_TAG, MPI_COMM_WORLD);
                 }
             }
         }
@@ -103,9 +103,9 @@ int main(int argc, char *argv[]) {
 
             MPI_Request request;
 
-            // MPI_Isend int array [1, 1, 0] to rank 0
+            // MPI_Send int array [1, 1, 0] to rank 0
             int arr[] = {1, 1, 0};
-            MPI_Isend(arr, 3, MPI_INT, ROOT_RANK, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+            MPI_Send(arr, 3, MPI_INT, ROOT_RANK, DEFAULT_TAG, MPI_COMM_WORLD);
 
             n--;
             m--;
@@ -113,22 +113,22 @@ int main(int argc, char *argv[]) {
             for (int col = 1; col <= m; col++) {
                 int array[] = {1, col, col};
                 int dest = (((1 - col) % cpu_count) + cpu_count) % cpu_count;
-                MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                MPI_Send(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
                 if (col != m) {
                     int array2[] = {1, col + 1, col};
                     dest = ((-col % cpu_count) + cpu_count) % cpu_count;
-                    MPI_Isend(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                    MPI_Send(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
                 }
             }
 
             for (int row = 1; row <= n; row++) {
                 int array[] = {row, 1, row};
                 int dest = (((row - 1) % cpu_count) + cpu_count) % cpu_count;
-                MPI_Isend(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                MPI_Send(array, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
                 if (row != n) {
                     int array2[] = {row + 1, 1, row};
                     dest = row % cpu_count;
-                    MPI_Isend(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD, &request);
+                    MPI_Send(array2, 3, MPI_INT, dest, DEFAULT_TAG, MPI_COMM_WORLD);
 
                 }
             }

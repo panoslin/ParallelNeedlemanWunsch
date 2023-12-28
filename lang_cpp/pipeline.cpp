@@ -20,7 +20,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
         int target_row = data[0], target_col = data[1], recv_val = data[2];
 
         // end condition
-        if (target_row == -1 && target_col == -1) {
+        if (target_row == -1) {
             return recv_val;
         }
 
@@ -60,7 +60,7 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
             }
 
             // release memory
-            recv_msg[key].clear();
+            recv_msg.erase(key);
 
             // last cell does not send message to descendant cells
             if (msg_sent == 0) {

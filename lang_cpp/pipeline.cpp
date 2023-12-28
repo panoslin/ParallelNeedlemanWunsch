@@ -3,18 +3,16 @@
 #include <vector>
 #include <algorithm>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <tuple>
 #include <csignal>
 #include "helper.h"
 #include "testcases.h"
 
-
 int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
     size_t n = s1.length(), m = s2.length();
-    MPI_Request request;
     int DEFAULT_TAG = 0;
-    std::map<std::tuple<int, int>, std::vector<int>> recv_msg;
+    std::unordered_map<std::tuple<int, int>, std::vector<int>, hash_tuple> recv_msg;
 
     while (true) {
         int data[3];
@@ -27,8 +25,8 @@ int wait_recv_send(std::string s1, std::string s2, int cpu_count) {
         }
 
         // store intermediate results
-        std::tuple<int, int> key = std::make_tuple(target_row, target_col);
-        get_or_create_vector(recv_msg, key).push_back(recv_val);
+        std::tuple<int, int> key(target_row, target_col);
+        recv_msg[key].push_back(recv_val);
         if (recv_msg[key].size() == 3) {
             auto edit_distance = std::min_element(recv_msg[key].begin(), recv_msg[key].end());
             int minValue = *edit_distance;
@@ -101,8 +99,6 @@ int main(int argc, char *argv[]) {
             MPI_Bcast(&s1[0], n, MPI_CHAR, ROOT_RANK, MPI_COMM_WORLD);
             MPI_Bcast(&s2[0], m, MPI_CHAR, ROOT_RANK, MPI_COMM_WORLD);
 
-            MPI_Request request;
-
             // MPI_Send int array [1, 1, 0] to rank 0
             int arr[] = {1, 1, 0};
             MPI_Send(arr, 3, MPI_INT, ROOT_RANK, DEFAULT_TAG, MPI_COMM_WORLD);
@@ -132,7 +128,6 @@ int main(int argc, char *argv[]) {
 
                 }
             }
-
             int answer = wait_recv_send(s1, s2, cpu_count);
             if (answer != expected) {
                 std::cout << "Wrong Answer" << std::endl;
